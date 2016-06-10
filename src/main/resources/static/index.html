@@ -12,15 +12,25 @@
     <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/webjars/angularjs/1.4.3/angular.js"></script>
     <script type="text/javascript">
-        angular.module("app", []).controller("home", function($http) {
+        angular.module("app", []).controller("home", function ($http) {
             var self = this;
-            $http.get("/user").success(function(data) {
+            $http.get("/user").success(function (data) {
                 self.user = data.userAuthentication.details.name;
                 self.authenticated = true;
-            }).error(function() {
+            }).error(function () {
                 self.user = "N/A";
                 self.authenticated = false;
             });
+
+            self.logout = function() {
+                $http.post('/logout', {}).success(function() {
+                    self.authenticated = false;
+                    $location.path("/");
+                }).error(function(data) {
+                    console.log("Logout failed");
+                    self.authenticated = false;
+                });
+            };
         });
     </script>
 </head>
@@ -31,6 +41,9 @@
     </div>
     <div class="container" ng-show="home.authenticated">
         Logged in as: <span ng-bind="home.user"></span>
+        <div>
+            <button ng-click="home.logout()" class="btn btn-primary">Logout</button>
+        </div>
     </div>
 </body>
 </html>
